@@ -1,0 +1,43 @@
+---
+title: "Test features of Quarto"
+author: "Bastien Chassagnol"
+date: last-modified	
+number-sections: true
+toc: true
+link-citations: true
+highlight-style: github
+# execute:
+#   eval: true
+#   echo: true
+format: 
+  # html:
+  #   embed-resources: true
+  #   theme: cosmo
+  #   sidebar: true
+  #   lightbox: true
+  pdf:
+    documentclass: book
+    papersize: letter # change for formatting, risk of conflict with geometry package
+    keep-tex: true
+    # package installation
+    pdf-engine: xelatex # supports fonts installation
+    # Code options
+    code-block-border-left: "#31BAE9"
+    code-block-render: minted
+    code-line-numbers: true
+    subparagraph: yes # required when using the titlesec package
+    include-in-header:
+      - file: assets/minted-vs-listings.tex
+---
+
+In @lst-formatting-code, we evaluate if the `TeX` package `minted` is functional, with default Quarto implementation.
+
+
+```{r}
+#| label: test-formatting-code
+#| lst-label: lst-formatting-code
+#| lst-cap: Irrelevant code for evaluating code formatting in a pdf document.
+
+a <- mean(1:10)
+```
+
