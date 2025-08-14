@@ -1,0 +1,25 @@
+.epigraph {
+  max-width: 600px;
+  margin: 2em auto;
+  padding: 1em 2em;
+  font-style: italic;
+  text-align: right;
+  border-left: 4px solid #ccc;
+  background-color: #f9f9f9;
+}
+
+.epigraph::before {
+  content: "“";
+  font-size: 2em;
+  vertical-align: -0.4em;
+  margin-right: 0.1em;
+  color: #666;
+}
+
+.epigraph::after {
+  content: "”";
+  font-size: 2em;
+  vertical-align: -0.4em;
+  margin-left: 0.1em;
+  color: #666;
+}

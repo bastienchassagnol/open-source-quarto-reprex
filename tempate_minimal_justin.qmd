@@ -1,0 +1,611 @@
+---
+title: "Test lists"
+author: "Bastien C."
+fig-align: center
+fig-pos: "h!"
+out-width: "80%"
+fig-dpi: 320
+dpi: 320
+lof: true
+lot: true
+toc: true
+toc-expand: true
+toc-depth: 4
+linestretch: 1.5
+indent: true
+filters:
+  - highlight-text
+  - callouty-theorem
+  - first-line-indent
+callouty-theorem:
+  thm:
+    override-title: true
+    callout: # Configuration for the callout block.
+      type: note
+      appearance: default
+      icon: true
+      collapase: false
+  def:
+    callout: 
+      type: tip
+      collapse: false
+  exm:
+    callout: 
+      type: tip
+  cor: 
+    callout: 
+      type: tip
+format:
+  html:
+    fig-format: svg
+    include-in-header:
+      - file: assets/macros_test.html
+    html-math-method:
+      method: mathjax
+      url: https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-svg.js
+  pdf: 
+    documentclass: book
+    monofont: "TeX Gyre Cursor"
+    monofontoptions: 'Scale=0.8'
+    papersize: letter
+    fig-format: pdf
+    pdf-engine: xelatex
+    keep-tex: true
+    include-in-header:
+      - file: assets/latex-options.tex
+      - file: assets/macros.tex
+    geometry:
+      - paperheight=10in
+      - paperwidth=7in
+      - left=0.7in # left margin
+      - right=0.7in # right margin
+      - top=0.7in # top margin
+      - bottom=0.8in # bottom margin
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+#  data analysis
+library(dplyr)
+library(tibble)
+
+# Table generation
+library(xtable)
+library(flextable)
+library(kableExtra)
+
+# data visualisation
+library(ggplot2)
+library(dagitty)
+library(ggdag)
+library(latex2exp)
+library(ggpubr)
+theme_set(theme_dag())
+
+set.seed(1) #for reproducibility
+```
+
+## Figures dimension, with code listings:
+
+In @lst-bow-dag, it's the code to generate a "bow DAG". 
+
+```{r}
+#| label: fig-bow-dag
+#| fig-cap: Pearl’s "bow DAG".
+#| fig-asp: 0.5625
+#| fig-width: 10
+#| lst-label: lst-bow-dag
+#| lst-cap: "Bow dag"
+
+bow_dag <- dagify(W ~ C + D,
+                  M ~ W,
+                  Y ~ M + C + E,
+                  C ~ A + B,
+                  D ~ A,
+                  E ~ B,
+                  exposure = "W",
+                  outcome = "Y",
+                  coords = list(x = c(W = -1, M = 0, Y = 1, A = -1, C = 0, B = 1, D = -1, E = 1)/2,
+                                y = c(W = 0, M = 0, Y = 0, A = 2, C = 1, B = 2, D = 1, E = 1)/2)) |> 
+  ggdag(text = TRUE, node_size = 16*1.5, text_size = 3.88*1.5) +
+  geom_dag_edges_link(arrow = grid::arrow(length = grid::unit(15, "pt"), type = "closed")) +
+  scale_x_continuous(expand = expansion(add = 0.4)) +
+  scale_y_continuous(expand = expansion(add = 0.4))
+
+bow_dag
+```
+
+## Maths environment with non-standard operators
+
+$$
+W_i = \mathbbm{1}_{\{X_i > c\}} = \begin{cases}
+    1 \quad \text{if } X_i > c \\
+    0 \quad \text{if } X_i \leq c.
+\end{cases}
+$$
+
+$$
+\sumj = 30
+$$
+
+## Theorems
+
+::: {#def-markov-compatibility}
+
+## Markov compatibility
+
+
+If a probability function $\mathbb{P}$ admits a factorization
+$$
+\mathbb{P}(X_1, \dots, X_k) = \mathbb{P}(X_1)\prod_{j=2}^k \mathbb{P}(X_j | PA_{X_j}),
+$$
+ relative to the sets of (Markovian) parents $PA_{X_j}$ given by a DAG $G,$ we say that $G$ **represents** $\mathbb{P},$ that $G$ and $\mathbb{P}$ are **compatible**, that $\mathbb{P}$ is **Markov relative** to $G$, or that $\mathbb{P}$ is **faithful** to $G$.
+
+:::
+
+::: {.proof}
+*Proof.* A full proof can be found in [@pearl_2009 p.80]. The gist of it is that, when $Z$ blocks all backdoor paths, $\mathbb{P}(Y=y|do(W=w),Z=z) = \mathbb{P}(Y=y|W=w, Z=z).$
+
+:::
+
+- Little exercise reported in @exr-butterfly-DAG:
+
+::: {#exr-butterfly-DAG}
+    Consider the Butterfly DAG of @fig-basic-butterfly-DAG:
+    (a)  Provide the set of parents of $W$.
+    (b)  Provide the set of ancestors of $W$.
+    (c)  Provide all backdoor paths between $W$ and $Y.$ Note those that contain a collider and mark them as closed.
+    (d)  Simulate all the variables in the DAG in a way similar to the case study of @sec-chap3-case-study
+    (e)  Compute the following linear regressions and determine in each case if the coefficient for $W$ is a causally unbiased estimate of the ATE. Justify your answer using the backdoor criterion.
+         (i)  $Y \sim W$
+         (ii) $Y \sim W + Z_1$
+         (iii)  $Y \sim W + Z_1 + Z_2$
+         (iv) $Y \sim W + Z_3 + Z_2$
+         (v)  $Y \sim W + Z_1 + Z_2 + Z_3$
+:::
+
+
+::: {#thm-prob-dsep}
+
+## Probabilistic Implications of *d*-separation
+
+[@pearl_2009 p.18] Consider three disjoint subsets of variables $X, Y, Z$, represented by nodes of a given DAG $G$.
+
+1.  If $X$ and $Y$ are *d*-separated by $Z$, then $X$ is independent of $Y$ conditional on $Z$ *in every distribution* $\mathbb{P}$ *compatible with* $G$. This can be written as
+$$
+(X \indep_G Y | Z) \implies (X \indep_{\mathbb{P}} Y | Z)_,
+$$
+ where the right-hand expression means (conditional) independence in the probability distribution $\mathbb{P}$ associated with the DAG.
+
+2.  Conversely, if $X$ and $Y$ are not *d*-separated by $Z$ in $G$, then $X$ and $Y$ are dependent conditional on $Z$ *in at least one distribution compatible with* $G.$ We denote this
+$$
+(X \not \indep_G Y | Z) \implies (X \not \indep_{\mathbb{P}} Y | Z), \text {in at least one distribution } \mathbb{P} \text{ compatible with } G.
+$$
+ In fact, in this case $X$ and $Y$ are conditionally dependent given $Z$ in almost every distribution, except those where the effects perfectly cancel out thanks to *numerical coincidences*. See @exm-numerical-coincidence
+
+:::
+
+- Examples of $d$-separation reported under @exm-numerical-coincidence:
+
+::: {#exm-numerical-coincidence}
+
+## Exceptional Situations for *d*-separation
+
+Consider the simplest two-variable DAG, $X \rightarrow Y$, and denote $Z = \emptyset$. Suppose $X$ is a standard gaussian distribution with mean 0, and
+$$
+Y = \begin{cases}
+         1, \quad &\text{if } X \geq 0, \\
+        -1, \quad &\text{if } X < 0.
+    \end{cases}
+$$
+ Then, due to the direct path between $X$ and $Y$, we have $X \not \indep_G Y | Z.$ Yet, $\mathbb{E}(X Y) = X \cdot \frac{1}{2} - X \cdot \frac{1}{2} = 0$ and $\mathbb{E}(X) = 0$, which entails that $\mathbb{E}(XY) = \mathbb{E}(X)\mathbb{E}(Y),$ a necessary and sufficient condition for independence between $X$ and $Y$ (See @sec-appendix for a review of this fact). Thus, $(X  \indep Y | Z)$, highlighting that *d*-separation does not always imply (conditional) independence. If this example feels contrived, your intuition is right. Except for these pathological cases *d*-separation should reflect our intuitions: if $X$ directly causes $Y,$ they "should" not be probabilistically independent.
+
+:::
+
+
+::: {#cor-non-adj-d-sep}
+
+## Testable Implications of *d*-separation
+
+Given a DAG $G$, if two nodes $X$ and $Y$ are non-adjacent, i.e. there is no direct causal link between them, then there exists a set $Z$ that $d$-separates $X$ from $Y.$ This means that an absence of arrows always implies a conditional independency in a compatible probability distribution. This is sometimes called the **pairwise Markov property** and is easily deduced from the Markov compatibility between $G$ and $\mathbb{P}$[^12].
+
+:::
+
+
+## Quotations
+
+> Jack said hello
+
+- We will learn about this "calculus for probabilistic and causal reasoning"
+
+## Epigraph text
+
+{{< epigraph "Correlation coefficients are not interesting if they merely correlate our observations. They are interesting only if they help us to learn more about these \[counterfactual\] worlds." source="---Karl Popper, The Myth of the Framework" >}}
+
+## Paragraph format
+
+Thus, we use the term **Directed Acyclic Graph (DAG)** for a graph that is constructed with one-sided arrows without creating cycles.
+
+Consider the graph $G$ where the set $V$ of vertices is $V = \{W, Y, S\}$ and the set $E$ of edges is $E = \{W\rightarrow Y, S \rightarrow W, S \rightarrow Y\}.$ Together we could denote these as
+$$
+G = \left\{\{W, Y, S\}, \{W\rightarrow Y, S \rightarrow W, S \rightarrow Y\}\right\},
+$$
+ although this notation is quite heavy. We oftentimes simply resort to picturing the graph. Indeed, @fig-barebones-DAG-2 is a pictorial representation of this graph. This graph is directed and acyclic, thus it is a DAG and can be used for causal inference. We will learn how to do soon.
+
+As such, DAGs are simply mathematical objects that can be studied for their own sake. In causal inference, DAGs become a powerful tool for *encoding causal knowledge and prior beliefs* we hold about a system of variables. We will soon learn that they not only encode knowledge, but from them we can rigorously deduce patterns that can be examined in the data. Before explaining how to move from a DAG to data analysis, we will build examples of DAGs, settle some terminology, and explain theorems. Together, these will highlight the power of DAGs in causal inference.
+
+In @fig-barebones-DAG we construct an arrow from $W$ to $Y$. This very simple graphical structure *encodes* two things: our prior knowledge (or belief) that $W,$ the treatment assignment, has a *causal effect* on $Y,$ the outcome. On the other hand, the absence of any other arrows *encodes* our belief that no other variables are relevant to the phenomenon under study, in particular that $S$ is not involved in any cause and effect relationships with neither $X$ nor $Y$. It is important to remember that an arrow encodes a prior knowledge or belief of a *causal relationship in the direction of an arrow*, and not mere association. On the other hand, the *absence of an arrow between two variables* denotes our prior belief that there is absolutely no causal link between them, while there could be an observed association in data. This is very important, so I repeat it. *Writing down an arrow, or more specifically, choosing to not write down an arrow are two very strong assumptions that you must be comfortable with before doing any sort of data analysis*. When in doubt, it is best to draw an arrow, because the converse implies a conditional independency in the data, a strong assumption[^4].Thus, the DAGs of @fig-barebones-DAG-1 and @fig-barebones-DAG-2 encode different sets of causal assumptions and would be approached differently in a subsequent analysis.
+
+
+
+## Figures generation with quarto rendering
+
+We generate in @lst-treatment-effect:
+
+```{r}
+#| label: treatment-effect
+#| lst-label: lst-treatment-effect
+#| lst-cap: Simulation of treatment effects.
+
+n <- 200
+cutoff <- 0
+continuous_covariate <- rnorm(n, cutoff, 1.5)
+RDD_treatment <- ifelse(continuous_covariate > cutoff, 1, 0)
+random_treatment <- rbinom(n, 1, 0.5)
+treatment_effect <- 10
+poly_noise_sd <- 8
+
+#RDD
+RDD_observed_outcome_with_effect <- 2 + treatment_effect*RDD_treatment + 2*continuous_covariate + rnorm(n, 0, 1)
+RDD_observed_outcome_without_effect <- 2 + 0*RDD_treatment + 2*continuous_covariate + rnorm(n, 0, 1)
+
+RDD_observed_outcome_with_effect_poly <- 2 + treatment_effect^1.5*RDD_treatment + continuous_covariate + continuous_covariate^2+ 2*continuous_covariate^3 + rnorm(n, 0, poly_noise_sd)
+RDD_observed_outcome_without_effect_poly <- 2 + 0*RDD_treatment + continuous_covariate + continuous_covariate^2 + 2*continuous_covariate^3 + rnorm(n, 0, poly_noise_sd)
+
+#Randomized
+random_observed_outcome_with_effect <- 2 + treatment_effect*random_treatment + 2*continuous_covariate  + rnorm(n, 0, 1)
+random_observed_outcome_without_effect <- 2 + 0*random_treatment+ 2*continuous_covariate + rnorm(n, 0, 1)
+
+random_observed_outcome_with_effect_poly <- 2 + treatment_effect^1.5*random_treatment + continuous_covariate + continuous_covariate^2+ 2*continuous_covariate^3 + rnorm(n, 0, poly_noise_sd)
+random_observed_outcome_without_effect_poly <- 2 + 0*random_treatment+ continuous_covariate + continuous_covariate^2 + 2*continuous_covariate^3 +  rnorm(n, 0, poly_noise_sd)
+
+data_treatment <- tibble::tibble(
+  continuous_covariate = continuous_covariate,
+  RDD_observed_outcome_with_effect = RDD_observed_outcome_with_effect,
+  RDD_observed_outcome_without_effect = RDD_observed_outcome_without_effect,
+  RDD_observed_outcome_with_effect_poly = RDD_observed_outcome_with_effect_poly,
+  RDD_observed_outcome_without_effect_poly = RDD_observed_outcome_without_effect_poly,
+  random_observed_outcome_with_effect = random_observed_outcome_with_effect,
+  random_observed_outcome_without_effect = random_observed_outcome_without_effect,
+  random_observed_outcome_with_effect_poly = random_observed_outcome_with_effect_poly,
+  random_observed_outcome_without_effect_poly = random_observed_outcome_without_effect_poly
+)
+```
+
+and the resulting is reported in @fig-RDD-intuition-poly, subfigures can be retrieved with @fig-RDD-intuition-poly-1.
+
+```{r}
+#| label: fig-RDD-intuition-poly
+#| fig-scap: Polynomial covariate relationship.
+#| fig-asp: 0.65
+#| fig-cap: $2x2$ panel of simulated data.
+#| layout: [[45,-5,45], [45,-5,45]]
+#| fig-subcap:
+#|   - Units are assigned based on cutoff on the continuous covariate ($x$-axis)
+#|   - Units are randomly assigned, indepedently of the covariate on the $x$-axis
+#|   - There is a treatment effect, the $y$-axis value is higher on average for the treatment group than the control group
+#|   - There is no treatment effect, the averages of both group are the same
+
+
+RDD_plot_with_effect_poly <-  ggplot(data_treatment, aes(x = continuous_covariate, y = RDD_observed_outcome_with_effect_poly, color = factor(RDD_treatment))) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(values = c("#2c7fb8", "#7fcdbb"), labels = c("Control", "Treatment")) +
+  theme_minimal() +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        axis.title.y = element_blank(),
+        legend.title = element_blank(),
+        legend.position="bottom") +
+  geom_vline(xintercept=cutoff,linetype=3)
+RDD_plot_with_effect_poly
+
+RDD_plot_without_effect_poly <- ggplot(data_treatment, aes(x = continuous_covariate, y = RDD_observed_outcome_without_effect_poly, color = factor(RDD_treatment))) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(values = c("#2c7fb8", "#7fcdbb"), labels = c("Control", "Treatment")) +
+  theme_minimal() +
+  theme(
+    axis.text  = element_blank(),
+    axis.ticks = element_blank(),
+    axis.title = element_blank(),
+    legend.title = element_blank(),
+    legend.position = "bottom") +
+  geom_vline(xintercept=cutoff,linetype=3)
+RDD_plot_without_effect_poly
+
+
+randomized_plot_with_effect_poly <- ggplot(data_treatment, aes(x = continuous_covariate, y = random_observed_outcome_with_effect_poly, color = factor(random_treatment))) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(values = c("#2c7fb8", "#7fcdbb"), labels = c("Control", "Treatment")) +
+  theme_minimal() +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        axis.title.y = element_blank(),
+        legend.title = element_blank(),
+        legend.position="bottom") +
+  geom_vline(xintercept=cutoff,linetype=3)
+randomized_plot_with_effect_poly
+
+randomized_plot_without_effect_poly <- ggplot(data_treatment, aes(x = continuous_covariate, y = random_observed_outcome_without_effect_poly, color = factor(random_treatment))) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(values = c("#2c7fb8", "#7fcdbb"), labels = c("Control", "Treatment")) +
+  theme_minimal() +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        axis.title.y = element_blank(),
+        legend.title = element_blank(),
+        legend.position="bottom") +
+  geom_vline(xintercept=cutoff,linetype=3)
+randomized_plot_without_effect_poly
+
+# Combine four subpanels
+# RDD_intuition_poly <- ggarrange(RDD_plot_with_effect_poly,
+#              RDD_plot_without_effect_poly,
+#              randomized_plot_with_effect_poly,
+#              randomized_plot_without_effect_poly,
+#              nrow = 2,
+#              ncol = 2,
+#              common.legend = TRUE, legend = "bottom")
+#
+# # Save the figure
+# RDD_intuition_annotated_poly <- annotate_figure(RDD_intuition_poly,
+#                 top = text_grob("Effect                                                                      No Effect", hjust = 0.52, vjust = 0.5),
+#                 left = text_grob("Randomized RDD", rot = 90, hjust = 0.5))
+#
+# RDD_intuition_annotated_poly
+```
+
+## Complex nested lists
+
+
+1.  He uses it as a model for the following story which describes the relabelled DAG of @fig-basic-collider-DAG-v2 the ground can be $Wet$, and hence $Slippery$, because of the $Rain$ or a $Sprinkler$, which in turn both depend causally on the $Season$. The ground can be $Slippery$ if $Wet$:
+    ```{r}
+    #| label: fig-basic-collider-DAG-v2
+    #| fig-cap: The Basic Structure of Collider Effects.
+
+
+    collider_DAG <- dagify(Y ~ W,
+    Z ~ W + Y,
+    exposure = "W",
+    outcome = "Y",
+    coords = list(x = c(Y = 1, Z = 0, W = -1)/2,
+    y = c(Y = 0, Z = -1, W = 0)/2)) |>
+    ggdag(text = TRUE,
+    node_size = 16*1.3,
+    text_size = 3.88*1.5) +
+    geom_dag_edges_link(arrow = grid::arrow(length = grid::unit(15, "pt"), type = "closed")) +
+    scale_x_continuous(expand = expansion(add = 0.1)) +
+    scale_y_continuous(expand = expansion(add = 0.1))
+
+
+    collider_DAG
+    ```
+
+2.  Et toi?
+    (i) Provide the set of parents of $W$.
+    (ii) Provide the set of ancestors of $W$:
+         (a) $Y \sim W$
+3.  Hell there.
+
+
+4.  Consider the DAG of @fig-obs-eq-dag:
+    ```{r}
+    #| label: fig-obs-eq-dag
+    #| fig-cap: A Toy DAG.
+
+
+    obs_equiv_dag <- dagify(
+      Y ~ X + Z,
+      Z ~ W,
+      X ~ W,
+      coords = list(x = c(Y = 1, X = 0, Z = 0, W = -1)/2,
+                    y = c(Y = 0, X = 0.5, Z = -0.5, W = 0)/2)) |>
+      ggdag(text = TRUE,
+            node_size = 16*1.5,
+            text_size = 3.88*1.5) +
+      geom_dag_edges_link(arrow = grid::arrow(length = grid::unit(15, "pt"),
+                                              type = "closed"))
+
+    obs_equiv_dag
+    ```
+    (a)  List all pairs of non-adjacent variables. For each such pair, write down a set $Z$ that d-separates them. This forms the set of testable implications of the DAG.
+    (b)  Draw the skeleton of the DAG by replacing all directed edges with undirected edges.
+    (c)  List all v-structures in the DAG.
+    (d)  Draw a new DAG by first adding only the directed edges that form v-structures identified in part (c).
+    (e)  Complete the DAG by orienting the remaining undirected edges. All possible orientations that do not create new v-structures or cycles form the class of observationally equivalent DAGs^[*Hint:* For each undirected edge remaining after adding v-structures, there are two possible orientations, as long as they do not create cycles or new v-structures.].
+    (f)  How many observationally equivalent DAGs are there^[*Hint:* If there are $k$ undirected edges after orienting v-structures, and no additional constraints from cycles or v-structures, there would be $2^k$ possible DAGs.]?
+
+## Tables generation
+
+```{r}
+#| label: simulating-two-confounder-DAG
+n <- 100 #number of observations to simulate
+treatment_effect <- 5 #true treatment effect
+
+Z1 <- rnorm(n, 5, 1) + rnorm(n, 0, 1) #1st confounder + noise
+Z2 <- rnorm(n, 5, 1) + rnorm(n, 0, 1) #2nd confounder + noise
+
+W <- rbinom(n, 1, plogis(Z1 + Z2 - 10)) #binary treatment
+Y <- rnorm(n, 2 + treatment_effect*W + 20*Z1 + 10*Z2, 3) + rnorm(n, 0, 1) #outcome model + noise
+
+simulated_data_confounder <- data.frame(W, Z1, Z2, Y)
+
+#unadjusted model
+Y_W <-  lm(Y ~ W, data = simulated_data_confounder)
+#unsufficiently adjusted model
+Y_W_Z1 <- lm(Y ~ W + Z1, data = simulated_data_confounder)
+
+#correct model
+Y_W_Z1_Z2 <- lm(Y ~ W + Z1 + Z2, data = simulated_data_confounder)
+```
+
+
+- Example with `xtable`, converted to `flextable`, see @tbl-xtable-generation:
+
+```{r}
+#| label: tbl-xtable-generation
+#| eval: true
+# Y_W_coef <-  c(coef(Y_W), NA, NA)
+# Y_W_Z1_coef <-  c(coef(Y_W_Z1), NA)
+# Y_W_Z1_Z2_coef <- coef(Y_W_Z1_Z2)
+
+
+Y_W_coef <-  c(coef(Y_W), NA, NA)
+Y_W_Z1_coef <-  c(coef(Y_W_Z1), NA)
+Y_W_Z1_Z2_coef <- coef(Y_W_Z1_Z2)
+
+df_xtable <- rbind(Y_W_coef, Y_W_Z1_coef, Y_W_Z1_Z2_coef) |>
+  round(2) |>
+  as.data.frame() |>
+  rownames_to_column("Model") |>
+  rename("$W$" = "W", "$Z_1$" = 4, "$Z_2$" = 5) |>
+  select(-`(Intercept)`) |>
+  mutate(Model = c("$Y \\sim W$", "$Y \\sim W + Z_1$", "$Y \\sim W + Z_1 + Z_2$")) |>
+  xtable(floating = FALSE, booktabs = TRUE, align = c("c","|c||","c","c","c|"),
+         caption = "Model coefficients for data generated from the two-confounder DAG",
+         label = "table:two_confounder_DAG_coef")
+
+df_xtable_to_flextable <- flextable::as_flextable(df_xtable,
+                                                  include.rownames = FALSE,   NA.string ="-", )
+df_xtable_to_flextable
+
+
+#### Not working #####
+# df_xtable <- df_xtable |>   print(include.rownames = FALSE,
+#                                   table.placement = "h!",
+#                                   sanitize.text.function = function(x){x})
+# df_xtable_to_flextable <- flextable::as_flextable(df_xtable)
+# df_xtable_to_flextable
+```
+
+
+- example with pure Markdown, and Pandoc syntax, see @tbl-two-confounder-DAG-coef
+
+::: {#tbl-two-confounder-DAG-coef}
+           Model             $W$    $Z_1$   $Z_2$
+  ------------------------ ------- ------- -------
+         $Y \sim W$         34.63
+      $Y \sim W + Z_1$      14.95   17.22
+   $Y \sim W + Z_1 + Z_2$   5.42    19.58   10.05
+
+  : Model coefficients for data generated from the two-confounder DAG
+
+:::
+
+- Example with `flextable` package, see @tbl-flextable:
+
+```{r}
+#| label: tbl-flextable
+
+eqs_flextable <- c(
+    "(ax^2 + bx + c = 0)",
+    "a \\ne 0",
+    "x = {-b \\pm \\sqrt{b^2-4ac} \\over 2a}")
+df <- tibble::tibble(`Y \\sim W` = eqs_flextable)
+
+
+ft <- flextable(df) |>
+  compose(j = 1, part = "header",
+          value = as_paragraph(as_equation(`Y \\sim W`, width = 2, height = .5)),
+          use_dot = TRUE) |>
+  compose(j = 1, part = "body",
+          value = as_paragraph(as_equation(`Y \\sim W`, width = 2, height = .5))) |>
+  align(align = "center", part = "all")
+
+ft
+
+```
+
+- Directly from the `lm` object
+
+```{r}
+#| label: tbl-flextable-lm
+#| eval: true
+#| layout: [[45,-10, 45], [100]]
+#| tbl-cap: "Model coefficients for data generated from the two-confounder DAG"
+
+Y_W_model <-  lm(Y ~ W, data = simulated_data_confounder)
+Y_W_Z1_model <- lm(Y ~ W + Z1, data = simulated_data_confounder)
+Y_W_Z1_Z2_model <- lm(Y ~ W + Z1 + Z2, data = simulated_data_confounder)
+
+flextable::as_flextable(Y_W_model) |>
+  flextable::set_caption("Without correcting for confounders")
+flextable::as_flextable(Y_W_Z1_model) |>
+  set_caption("Insufficient correction")
+flextable::as_flextable(Y_W_Z1_Z2_model) |>
+  set_caption("Fully correcting for all confounders")
+```
+
+- And example with `kableExtra` package, see @tbl-kable-extra:
+
+```{r}
+#| label: tbl-kable-extra
+
+eqs_kable <- c(
+    "$(ax^2 + bx + c = 0)$",
+    "$a \\ne 0$",
+    "$x = {-b \\pm \\sqrt{b^2-4ac} \\over 2a}$")
+
+df <- tibble::tibble(`$Y \\sim W$` = eqs_kable)
+
+kable_table <- kbl(
+  df,
+  format = "pipe",    # or "html" / "latex"
+  booktabs = TRUE     # enables clean top/mid/bottom rules
+) |>
+  kable_minimal(
+    full_width = FALSE,
+    html_font = "Cambria"
+  ) |>
+  kable_styling(
+    bootstrap_options = c("basic", "condensed", "hover")  # removes striped rows / other bootstrap styles
+  )
+
+kable_table
+```
+
+## Forest visualisations
+
+```{{bash}}
+xelatex -output-directory=figures -jobname=forest latex/forest-extended.tex && rm figures/forest.{aux,log}
+convert -density 300 figures/forest.pdf -background none figures/forest.svg
+```
+
+Report to @fig-assignment-mechanism-taxonomy:
+
+:::: {.content-visible when-format="pdf"}
+
+!["A taxonomy of treatment assignment mechanisms"](latex/forest.tex){#fig-assignment-mechanism-taxonomy}
+
+::::
+
+::: {.content-visible when-format="html"}
+
+!["A taxonomy of treatment assignment mechanisms"](figures/forest.svg){#fig-assignment-mechanism-taxonomy width=80%}
+
+:::
+

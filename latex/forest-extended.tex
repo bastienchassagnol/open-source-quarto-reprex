@@ -1,0 +1,31 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{forest}
+\usepackage{amsmath, amssymb, amsthm}
+\newcommand{\assignment}{\mathbf{W} \,| \, \mathbf{X}, \mathbf{Y(0)}, \mathbf{Y(1)}}
+
+\begin{document}
+
+\begin{center}
+\begin{forest}
+  [$\mathbb{P}(\assignment)$,
+    for tree={
+      parent anchor=south,
+      child anchor=north,
+      l+=10mm,
+      draw=black
+    },
+    s sep=25mm
+    [Experimental Study, edge label={node[midway,above left,font=\scriptsize]{Known and controlled form}}
+      [Randomized Experiment, edge label={node[midway, left,font=\scriptsize]{Probabilistic}}
+        [Classical Randomized Experiment (Regular), tier=bottom, edge label={node[midway, left,font=\scriptsize]{Individualistic and Unconfounded}}]
+      ]
+    ]
+    [Observational Study, edge label={node[midway,above right,font=\scriptsize]{Unknown form}}
+      [Regular, tier=bottom, edge label={node[midway, left,font=\scriptsize]{Ind.-Prob.-Unconf.}}]
+      [Irregular, tier=bottom]
+    ]
+  ]
+\end{forest}
+\end{center}
+\end{document}
