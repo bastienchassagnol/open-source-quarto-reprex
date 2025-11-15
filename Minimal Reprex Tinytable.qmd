@@ -1,0 +1,68 @@
+---
+title: "Tinytable colspan"
+author: "Bastien CHASSAGNOL"
+format:
+  html:
+      embed-resources: true
+      html-math-method:
+        method: mathjax
+        url: https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-svg.js
+  pdf: 
+    pdf-engine: pdflatex
+    keep-tex: true
+---
+
+
+```{r}
+#| label: setup
+#| include: false
+
+
+library(tinytable)
+library(dplyr)
+
+```
+
+## Table generation
+
+- see example in @tbl-QBA-tasks:
+
+```{r}
+#| label: tbl-QBA-tasks
+#| eval: true
+#| tbl-cap: Planning for quantitative bias analysis.
+
+options(tinytable_quarto_disable_processing = NULL)
+df <- tibble::tibble(
+  `General tasks` = c(
+    "Determine likely threats to validity",
+    "Allocate resources"
+  ),
+  `Information bias` = c(
+    "Ask whether measurement error of any important analytic variable is a likely threat",
+    "Develop databases that allow for recording of data, allocate time for data collection and analysis of data, write protocols for substudies, collect and understand software for analysis"),
+  `Selection bias` = c(
+    "Ask whether selection bias or loss-to-follow-up is a likely threat",
+    "Develop databases that allow for recording of data, allocate time for data collection and analysis of data, write protocols for substudies, collect and understand software for analysis"),
+  `Confounding` = c(
+    "Ask whether residual confounding or unmeasured confounding is likely",
+    "Develop databases that allow for recording of data, allocate time for data collection and analysis of data, write protocols for substudies, collect and understand software for analysis")
+)
+
+tt_tbl <- tinytable::tt(df, 
+             width = c(.2, .22, .22, .22), 
+             theme = "grid") |>
+  # Collapse rows
+  style_tt(i = 2, j = 2, colspan = 3) |> 
+  # Bold formatting
+  style_tt(i = 1, bold = TRUE) |>
+  style_tt(j = 1, bold = TRUE) |> 
+  # Column alignment
+  style_tt(j = 1, align = "l") |>
+  style_tt(j = 2:4, align = "c") |>
+  style_tt(fontsize = 0.8) 
+
+tt_tbl
+```
+
+

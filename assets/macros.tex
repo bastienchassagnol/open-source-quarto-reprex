@@ -1,24 +1,26 @@
 
-%%%% Customly defined math macros %%%%
 
+%% maths specific packages %%
+\usepackage{bbm} % indicator function
+\usepackage{forest} % forest DAGs
+\usepackage{mathtools}
+\usepackage{centernot} % better rendering of independence symbols
+
+%%%% Customly defined math macros %%%%
 \newcommand{\bo}[1]{\mathbf{#1}}
 \newcommand{\cond}{\, | \,}
 \newcommand{\defeq}{\vcentcolon=}
 \newcommand{\sumi}{\sum_{i = 1}^{n}}
 \newcommand{\sumj}{\sum_{j = 1}^{n}}
 \newcommand{\prob}{\mathbb{P}}
-\newcommand{\indep}{\perp \!\!\! \perp}
+\newcommand{\indep}{\perp \!\!\! \perp} % \newcommand{\indep}{\mathrel{\perp\mspace{-10mu}\perp}} with xelatex
+
 \newcommand{\training}{\mathcal{X} \times \mathcal{Y}}
 \newcommand{\assignment}{\mathbf{W} \,| \, \mathbf{X}, \mathbf{Y(0)}, \mathbf{Y(1)}}
 \newcommand{\unitprob}{p_i(\mathbf{X}, \mathbf{Y(0)}, \mathbf{Y(1)})}
 \newcommand{\dsep}{\textit{d}-separation}
-\newcommand{\email}{belairjustin@gmail.com}
-\newcommand{\githubrepo}{https://github.com/JB-Statistical-Consulting/Causal-Inference-Book}
-\newcommand{\theauthor}{Justin BELAIR}
 
-%% maths specific packages %%
-\usepackage{bbm} % indicator function
-\usepackage{forest} % forest DAGs
+
 \newcommand{\textbackslashsim}{\backslash\!\sim} % sim operator, oddly defined in xtable
 
 %%%% End of custom defined math macros %%%%

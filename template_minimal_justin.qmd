@@ -1,18 +1,83 @@
 ---
 title: "Test lists"
-author: "Bastien C."
+# document metadata
+authors:
+  - name: Justin Belair
+    id: jb
+    orcid: 0000-0002-4219-1824
+    email: belairjustin@gmail.com
+    url: https://justinbelair.com/
+    corresponding: true
+    phone:  1 (514) 755-2851
+    affiliation:
+      - name: McGill
+        city: Montreal
+        state: Quebec
+        country: Canada
+    roles:
+      - analyis: lead
+      - writing–original-draft: lead
+      - data-curation: lead
+      - software: supporting
+  - name: Bastien CHASSAGNOL
+    id: bc
+    orcid: 0000-0002-8955-2391
+    email: bastien_chassagnol@laposte.net
+    url: https://github.com/bastienchassagnol
+    roles:
+      - analyis: supporting
+      - data curation: supporting
+      - software: lead
+    degrees:
+      - B.S.
+      - PhD
+    affiliation:
+      - name: Marseille Medical Genetics
+        department: Systems Biomedicine
+        city: Marseille
+        country: France
+        url: https://www.marseille-medical-genetics.org/a-baudot/
+description: |
+  A comprehensive review of practical
+  causal use cases, accompagnied with R snippets.
+abstract: |
+  That is, bring you, dear reader, up-to-date on current statistical methodology
+  in causal inference! I made the book self-contained, so we will go over
+  all the necessary theory.
+keywords:
+  - Causal Analysis
+  - DAGs
+  - Statistics
+license: "CC BY-NC-ND" # The most restrictive one
+copyright:
+  holder: Justin Belair
+  year: 2024 - 2030
+# To make it citeable
+funding: "The author received no specific funding for this work."
+lang: en-GB
+subject: "Causal Analysis"
+citation: true # Returns with the URL of the website
+google-scholar: true
+# Format genetation
+embed-resources: true
 fig-align: center
 fig-pos: "h!"
 out-width: "80%"
 fig-dpi: 320
 dpi: 320
-lof: true
-lot: true
+lof: false
+lot: false
 toc: true
+toc-title: Contents
+number-sections: true
 toc-expand: true
 toc-depth: 4
 linestretch: 1.5
 indent: true
+freeze: true
+# code options
+code-block-border-left: "#6A6A68"   # dark grey border
+code-block-bg: "#F7F6F2"            # light grey background
 filters:
   - highlight-text
   - callouty-theorem
@@ -26,33 +91,50 @@ callouty-theorem:
       icon: true
       collapase: false
   def:
+    override-title: true
     callout: 
       type: tip
       collapse: false
+      appearance: simple
   exm:
+    override-title: true
     callout: 
       type: tip
+      appearance: minimal
   cor: 
+    override-title: true
+    callout: 
+      type: tip
+  prp: 
+    override-title: true
+    callout: 
+      type: tip
+  lem: 
+    override-title: true
     callout: 
       type: tip
 format:
   html:
     fig-format: svg
     include-in-header:
-      - file: assets/macros_test.html
+      - file: assets/macros.html
     html-math-method:
       method: mathjax
       url: https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-svg.js
+    theme:
+      light: [cosmo, assets/css/style-utiltr.scss]
+      dark: [darkly, assets/css/style-utiltr.scss]
   pdf: 
     documentclass: book
+    fontfamily: tgpagella # only required for pdflatex
     monofont: "TeX Gyre Cursor"
     monofontoptions: 'Scale=0.8'
     papersize: letter
     fig-format: pdf
-    pdf-engine: xelatex
+    pdf-engine: pdflatex
     keep-tex: true
     include-in-header:
-      - file: assets/latex-options.tex
+      # - file: assets/latex-options.tex
       - file: assets/macros.tex
     geometry:
       - paperheight=10in
@@ -61,12 +143,16 @@ format:
       - right=0.7in # right margin
       - top=0.7in # top margin
       - bottom=0.8in # bottom margin
+execute:
+  echo: false
+  eval: true
 ---
+
+First derivation of drug fingerprints using innovative cellular barcoding applied to cancer cells subclones
 
 ```{r}
 #| label: setup
 #| include: false
-
 #  data analysis
 library(dplyr)
 library(tibble)
@@ -87,48 +173,7 @@ theme_set(theme_dag())
 set.seed(1) #for reproducibility
 ```
 
-## Figures dimension, with code listings:
 
-In @lst-bow-dag, it's the code to generate a "bow DAG". 
-
-```{r}
-#| label: fig-bow-dag
-#| fig-cap: Pearl’s "bow DAG".
-#| fig-asp: 0.5625
-#| fig-width: 10
-#| lst-label: lst-bow-dag
-#| lst-cap: "Bow dag"
-
-bow_dag <- dagify(W ~ C + D,
-                  M ~ W,
-                  Y ~ M + C + E,
-                  C ~ A + B,
-                  D ~ A,
-                  E ~ B,
-                  exposure = "W",
-                  outcome = "Y",
-                  coords = list(x = c(W = -1, M = 0, Y = 1, A = -1, C = 0, B = 1, D = -1, E = 1)/2,
-                                y = c(W = 0, M = 0, Y = 0, A = 2, C = 1, B = 2, D = 1, E = 1)/2)) |> 
-  ggdag(text = TRUE, node_size = 16*1.5, text_size = 3.88*1.5) +
-  geom_dag_edges_link(arrow = grid::arrow(length = grid::unit(15, "pt"), type = "closed")) +
-  scale_x_continuous(expand = expansion(add = 0.4)) +
-  scale_y_continuous(expand = expansion(add = 0.4))
-
-bow_dag
-```
-
-## Maths environment with non-standard operators
-
-$$
-W_i = \mathbbm{1}_{\{X_i > c\}} = \begin{cases}
-    1 \quad \text{if } X_i > c \\
-    0 \quad \text{if } X_i \leq c.
-\end{cases}
-$$
-
-$$
-\sumj = 30
-$$
 
 ## Theorems
 
@@ -146,7 +191,7 @@ $$
 :::
 
 ::: {.proof}
-*Proof.* A full proof can be found in [@pearl_2009 p.80]. The gist of it is that, when $Z$ blocks all backdoor paths, $\mathbb{P}(Y=y|do(W=w),Z=z) = \mathbb{P}(Y=y|W=w, Z=z).$
+A full proof can be found in [@pearl_2009 p.80]. The gist of it is that, when $Z$ blocks all backdoor paths, $\mathbb{P}(Y=y|do(W=w),Z=z) = \mathbb{P}(Y=y|W=w, Z=z).$
 
 :::
 
@@ -191,16 +236,14 @@ $$
 
 ::: {#exm-numerical-coincidence}
 
-## Exceptional Situations for *d*-separation
-
-Consider the simplest two-variable DAG, $X \rightarrow Y$, and denote $Z = \emptyset$. Suppose $X$ is a standard gaussian distribution with mean 0, and
+(Exceptional Situations for *d*-separation) Consider the simplest two-variable DAG, $X \rightarrow Y$, and denote $Z = \emptyset$. Suppose $X$ is a standard gaussian distribution with mean 0, and
 $$
 Y = \begin{cases}
          1, \quad &\text{if } X \geq 0, \\
         -1, \quad &\text{if } X < 0.
     \end{cases}
 $$
- Then, due to the direct path between $X$ and $Y$, we have $X \not \indep_G Y | Z.$ Yet, $\mathbb{E}(X Y) = X \cdot \frac{1}{2} - X \cdot \frac{1}{2} = 0$ and $\mathbb{E}(X) = 0$, which entails that $\mathbb{E}(XY) = \mathbb{E}(X)\mathbb{E}(Y),$ a necessary and sufficient condition for independence between $X$ and $Y$ (See @sec-appendix for a review of this fact). Thus, $(X  \indep Y | Z)$, highlighting that *d*-separation does not always imply (conditional) independence. If this example feels contrived, your intuition is right. Except for these pathological cases *d*-separation should reflect our intuitions: if $X$ directly causes $Y,$ they "should" not be probabilistically independent.
+ Then, due to the direct path between $X$ and $Y$, we have $X \not \indep_G Y | Z.$ Yet, $\mathbb{E}(X Y) = X \cdot \frac{1}{2} - X \cdot \frac{1}{2} = 0$ and $\mathbb{E}(X) = 0$, which entails that $\mathbb{E}(XY) = \mathbb{E}(X)\mathbb{E}(Y),$ a necessary and sufficient condition for independence between $X$ and $Y$. Thus, $(X  \indep Y | Z)$, highlighting that *d*-separation does not always imply (conditional) independence. If this example feels contrived, your intuition is right. Except for these pathological cases *d*-separation should reflect our intuitions: if $X$ directly causes $Y,$ they "should" not be probabilistically independent.
 
 :::
 
@@ -214,6 +257,208 @@ Given a DAG $G$, if two nodes $X$ and $Y$ are non-adjacent, i.e. there is no dir
 :::
 
 
+
+## Maths commands with non-standard operators
+
+$$
+W_i = \mathbbm{1}_{\{X_i > c\}} = \begin{cases}
+    1 \quad \text{if } X_i > c \\
+    0 \quad \text{if } X_i \leq c.
+\end{cases}
+$$
+
+$$
+\sumj = 30
+$$
+
+- Independence symbol:
+
+$$
+X\indep_G Y|Z,
+$$
+
+- and its opposite:
+
+$$
+X \not \indep_G Y|Z,
+$$
+
+$$
+X \not \indep_G Y|Z,
+$$
+
+
+## Smaller environments
+
+```{=latex}
+\small
+```
+
+::: {.small}
+
+In this chapter, we cover:
+
+-   The theoretical foundations of Directed Acyclic Graphs (DAGs), Bayesian Causal Networks (BCN), and Structural Causal Models (SCM)
+-   The notion of Markov compatibility between a DAG and (families of) probability distributions
+-   The notion of $d$-separation and how to use it to read conditional independencies from DAGs
+-   The backdoor criterion and backdoor adjustment formula
+-   Common DAG structures like confounding, colliders, mediators, M-bias, and butterfly bias
+-   The definition of the $do$-operator as a mathematical model for experimental interventions, in both CBNs and SCMs, along with the truncated factorization formula
+
+You should walk away from this chapter with the following skills:
+
+-   A reliable understanding of DAG terminology and notation
+-   A robust intuition about confounding, collider bias, mediation effects, etc.
+-   A solid capability of identifying paths in DAGs and using them to determine identifiability of causal effects and conditional independencies in data
+-   An advanced capacity to work through real-world examples by building different DAG structures and critically assessing the assumptions they imply
+-   Intimate knowledge of R code for simulating and analyzing data based on DAG structures
+
+:::
+
+```{=latex}
+\normalsize
+```
+
+## Indent testing
+
+This book stands on the shoulders of many great textbooks on causal
+inference.
+
+A very gentle, short, and captivating non-technical book is
+[@rosenbaum2023causal]. The famous [@pearl2018book] book is a compelling
+narrative view of the history of causal inference, yet it only covers
+the point of view of Pearl’s camp. As we will see, there are many
+different schools of thought in causal inference. A good introductory
+book which eases into technical material is [@pearl_et_al_2016], yet it
+has some flaws in my opinion. Indeed, it does not go too far into the
+subject, as it is simply a primer and takes around a third of the space
+to go over basic probability theory and graph theory before really
+diving into causal inference. This short book thus leaves very little
+space to go deeper in causal inference.
+
+My aim has been to take the next step from this book. That is, bring
+you, dear reader, up-to-date on current statistical methodology in
+causal inference! I made the book self-contained, so we will go over all
+the necessary theory, but we assume you, dear reader, is familiar with
+probability and statistics and leave all this basic theory in the
+@sec-appendix for your reference.
+
+I attribute [@pearl_2009] with sparking my curiosity to go deeper in the
+fascinating subject of causal inference–it’s a true masterpiece and I
+recall fondly the intellectual awakening it sparked in me when I read it
+for the first time. It is a difficult book written with the goal of
+rigorously defining Pearl’s approach to causal inference, which relies a
+lot on advanced mathematics–at least, more advanced than what a
+traditional applied (data) scientist is equipped to handle.
+[@imbens_rubin_2021] is another very elegant textbook which I loved
+reading, but it is also heavy on mathematics. [@Morgan_Winship_2014] is
+rich with references to literature and real-world examples taken from
+decades of causal debates in social sciences, but it can be a bit heavy.
+[@shadish2002experimental] is an amazing book on randomized and
+quasi-experimental design, but it is more methodological and contains
+virtually no mathematics. We will also discuss epidemiology as it has
+become increasingly technical, with much overlap with what was
+traditionally called biostatistics. The best book for causal inference
+for epidemiologists is in my opinion [@hernan2024causal]. Plus,
+epidemiology relies almost uniquely on observational data, where causal
+inference methodology is indispensable. As we will see, a major
+intellectual breakthrough in causal inference comes from our
+understanding of when and how we can analyze observational data as if it
+was experimental, so-to-speak. Great references for epidemiology and
+more specifically causal inference within the field are [@ModernEpi] and
+[@Westreich_2020]. There are even more specialized books like
+[@vanderWeele2015] and [@Shipley_2000], an ecology book, that will be
+referenced throughout. Economists have also written amazing causal
+inference textbooks, such as [@cunningham_mixtape] and
+[@angrist_mostly_2008]. Machine learning (ML) and Artificial
+Intelligence (AI) based approaches to causal inference are introduced in
+[@molak2023causal], which also serves as a great introduction to causal
+discovery methods and uses Python, which is rather rare. ML and AI
+approaches are covered in depth in [@chernozhukov2024applied]. An
+interesting framework called Targeted Maximum Likelihood Estimation
+(TMLE) is covered in depth in [@vanderLaan2011targeted]. All this is
+without mentioning the 100s of papers I’ve read over the years that you
+will find in the bibliography. This sprawling literature on causal
+inference serves as a foundation to the book you’re about to read. So
+many methods are published everyday and we cannot hope to cover all of
+them–each Chapter of this book could receive a book-sized–or even a
+multi-volume series length–coverage. The hope is that by learning
+fundamentals, going through exercises, and practicing with code, a solid
+basis is created upon which learning the future specialized methods you
+may need need can be done without too much difficulty. Indeed, in my
+opinion, mastering the material of this book would put you ahead of the
+vast majority of causal inference practitioners,  **below, by jumping two lines, instead of one.**, and you.
+<br> <br>
+
+As a trained mathematician and statistician who’s taught dozens of
+university-level courses to business students, data scientists,
+engineers, and researchers, I have the necessary background to decipher
+these complex textbooks and bring out the essence for
+non-mathematicians, without having to go through long and rigorous
+mathematical proofs. I’ve also worked as a statistical consultant with
+dozens of scientists from around the world in many biomedical sciences,
+as well as researchers in psychology, psychiatry, agronomy,
+epidemiology, and even Research and Development (R&D) in biotechnology
+and pharmaceutical industries. I’ve been applying causal inference in
+applied scientific research for a long time now, through my services
+offered at a company I founded and run on a daily basis, JB Statistical
+Consulting[^index-1]. I’m also a philosophy dilettante, who’s been
+mostly interested in figuring out how this beautiful thing we call
+Science actually works and how to do it well, through reading philosophy
+of science, history of science, epistemology, and more. All this is to
+say that I (again, very humbly) believe I’m uniquely positioned to take
+the complex mathematical and philosophical ideas behind causal
+inference, decipher them and bring them to a level where an applied
+scientist can use them. Plus, I absolutely love sharing knowledge I’m
+passionate about!
+
+
+## Mailto example
+
+- Instead of `\email`, use `[belairjustin@gmail.com](mailto:belairjustin@gmail.com)`.
+
+## Toc example {.unnumbered .unlisted}
+
+### Unumbered header {.unnumbered}
+
+### Not present in the toc {.unlisted}
+
+
+## Figures dimension, with code listings:
+
+In @lst-bow-dag, it's the code to generate a "bow DAG".
+
+```{r}
+#| label: fig-bow-dag
+#| fig-cap: Pearl’s "bow DAG".
+#| fig-asp: 0.5625
+#| fig-width: 10
+#| lst-label: lst-bow-dag
+#| lst-cap: "Bow dag"
+#| echo: true
+
+bow_dag <- dagify(W ~ C + D,
+                  M ~ W,
+                  Y ~ M + C + E,
+                  C ~ A + B,
+                  D ~ A,
+                  E ~ B,
+                  exposure = "W",
+                  outcome = "Y",
+                  coords = list(x = c(W = -1, M = 0, Y = 1, A = -1, C = 0, B = 1, D = -1, E = 1)/2,
+                                y = c(W = 0, M = 0, Y = 0, A = 2, C = 1, B = 2, D = 1, E = 1)/2)) |>
+  ggdag(text = TRUE, node_size = 16*1.5, text_size = 3.88*1.5) +
+  geom_dag_edges_link(arrow = grid::arrow(length = grid::unit(15, "pt"), type = "closed")) +
+  scale_x_continuous(expand = expansion(add = 0.4)) +
+  scale_y_continuous(expand = expansion(add = 0.4))
+
+bow_dag
+```
+
+
+
+
+
 ## Quotations
 
 > Jack said hello
@@ -224,7 +469,7 @@ Given a DAG $G$, if two nodes $X$ and $Y$ are non-adjacent, i.e. there is no dir
 
 {{< epigraph "Correlation coefficients are not interesting if they merely correlate our observations. They are interesting only if they help us to learn more about these \[counterfactual\] worlds." source="---Karl Popper, The Myth of the Framework" >}}
 
-## Paragraph format
+## Paragraph format, and large block of texts
 
 Thus, we use the term **Directed Acyclic Graph (DAG)** for a graph that is constructed with one-sided arrows without creating cycles.
 
@@ -232,11 +477,11 @@ Consider the graph $G$ where the set $V$ of vertices is $V = \{W, Y, S\}$ and th
 $$
 G = \left\{\{W, Y, S\}, \{W\rightarrow Y, S \rightarrow W, S \rightarrow Y\}\right\},
 $$
- although this notation is quite heavy. We oftentimes simply resort to picturing the graph. Indeed, @fig-barebones-DAG-2 is a pictorial representation of this graph. This graph is directed and acyclic, thus it is a DAG and can be used for causal inference. We will learn how to do soon.
+ although this notation is quite heavy. We oftentimes simply resort to picturing the graph. Indeed a pictorial representation of this graph. This graph is directed and acyclic, thus it is a DAG and can be used for causal inference. We will learn how to do soon.
 
 As such, DAGs are simply mathematical objects that can be studied for their own sake. In causal inference, DAGs become a powerful tool for *encoding causal knowledge and prior beliefs* we hold about a system of variables. We will soon learn that they not only encode knowledge, but from them we can rigorously deduce patterns that can be examined in the data. Before explaining how to move from a DAG to data analysis, we will build examples of DAGs, settle some terminology, and explain theorems. Together, these will highlight the power of DAGs in causal inference.
 
-In @fig-barebones-DAG we construct an arrow from $W$ to $Y$. This very simple graphical structure *encodes* two things: our prior knowledge (or belief) that $W,$ the treatment assignment, has a *causal effect* on $Y,$ the outcome. On the other hand, the absence of any other arrows *encodes* our belief that no other variables are relevant to the phenomenon under study, in particular that $S$ is not involved in any cause and effect relationships with neither $X$ nor $Y$. It is important to remember that an arrow encodes a prior knowledge or belief of a *causal relationship in the direction of an arrow*, and not mere association. On the other hand, the *absence of an arrow between two variables* denotes our prior belief that there is absolutely no causal link between them, while there could be an observed association in data. This is very important, so I repeat it. *Writing down an arrow, or more specifically, choosing to not write down an arrow are two very strong assumptions that you must be comfortable with before doing any sort of data analysis*. When in doubt, it is best to draw an arrow, because the converse implies a conditional independency in the data, a strong assumption[^4].Thus, the DAGs of @fig-barebones-DAG-1 and @fig-barebones-DAG-2 encode different sets of causal assumptions and would be approached differently in a subsequent analysis.
+In @fig-barebones-DAG we construct an arrow from $W$ to $Y$. This very simple graphical structure *encodes* two things: our prior knowledge (or belief) that $W,$ the treatment assignment, has a *causal effect* on $Y,$ the outcome. On the other hand, the absence of any other arrows *encodes* our belief that no other variables are relevant to the phenomenon under study, in particular that $S$ is not involved in any cause and effect relationships with neither $X$ nor $Y$. It is important to remember that an arrow encodes a prior knowledge or belief of a *causal relationship in the direction of an arrow*, and not mere association. On the other hand, the *absence of an arrow between two variables* denotes our prior belief that there is absolutely no causal link between them, while there could be an observed association in data. This is very important, so I repeat it. *Writing down an arrow, or more specifically, choosing to not write down an arrow are two very strong assumptions that you must be comfortable with before doing any sort of data analysis*. When in doubt, it is best to draw an arrow, because the converse implies a conditional independency in the data, a strong assumption[^4].
 
 
 
@@ -439,71 +684,82 @@ randomized_plot_without_effect_poly
     (e)  Complete the DAG by orienting the remaining undirected edges. All possible orientations that do not create new v-structures or cycles form the class of observationally equivalent DAGs^[*Hint:* For each undirected edge remaining after adding v-structures, there are two possible orientations, as long as they do not create cycles or new v-structures.].
     (f)  How many observationally equivalent DAGs are there^[*Hint:* If there are $k$ undirected edges after orienting v-structures, and no additional constraints from cycles or v-structures, there would be $2^k$ possible DAGs.]?
 
-## Tables generation
+## Tables generation with `flextable` and `gt`
+
+- Example with `flextable` in @tbl-two-confounder-DAG-coef-flextable. Not recommended as this does not integrate with `quarto` and a `pdflatex` rendering:
 
 ```{r}
-#| label: simulating-two-confounder-DAG
-n <- 100 #number of observations to simulate
-treatment_effect <- 5 #true treatment effect
+#| label: tbl-two-confounder-DAG-coef-flextable
+#| tbl-cap: "Model coefficients for data generated from the two-confounder DAG"
 
-Z1 <- rnorm(n, 5, 1) + rnorm(n, 0, 1) #1st confounder + noise
-Z2 <- rnorm(n, 5, 1) + rnorm(n, 0, 1) #2nd confounder + noise
+Y_W_coef <-  c(coef(Y_W), NA, NA)
+Y_W_Z1_coef <-  c(coef(Y_W_Z1), NA)
+Y_W_Z1_Z2_coef <- coef(Y_W_Z1_Z2)
 
-W <- rbinom(n, 1, plogis(Z1 + Z2 - 10)) #binary treatment
-Y <- rnorm(n, 2 + treatment_effect*W + 20*Z1 + 10*Z2, 3) + rnorm(n, 0, 1) #outcome model + noise
+df_two_confounder <- rbind(Y_W_coef, Y_W_Z1_coef, Y_W_Z1_Z2_coef) |>
+  round(2) |>
+  tibble::as_tibble() |> # only tibble preserves colnames as such
+  rename("Z_1" = V3, "Z_2" = V4) |>
+  rownames_to_column("Model") |>
+  select(-`(Intercept)`) |>
+  mutate(Model = c("Y \\sim W", "Y \\sim W + Z_1", "Y \\sim W + Z_1 + Z_2"))
 
-simulated_data_confounder <- data.frame(W, Z1, Z2, Y)
+ft <- flextable(df_two_confounder) |>
+  compose(j = "Model", part = "body",
+          value = as_paragraph(as_equation(`Model`, width = 2, height = .5))) |>
+  compose(j = "W", part = "header",
+          value = as_paragraph(as_equation(`W`, width = 2, height = .5))) |>
+  compose(j = "Z_1", part = "header",
+          value = as_paragraph(as_equation(`Z_1`, width = 2, height = .5))) |>
+  compose(j = "Z_2", part = "header",
+          value = as_paragraph(as_equation(`Z_2`, width = 2, height = .5))) |>
+  flextable::colformat_num(na_str = " ") |>
+  flextable::bold(part = "header")
 
-#unadjusted model
-Y_W <-  lm(Y ~ W, data = simulated_data_confounder)
-#unsufficiently adjusted model
-Y_W_Z1 <- lm(Y ~ W + Z1, data = simulated_data_confounder)
-
-#correct model
-Y_W_Z1_Z2 <- lm(Y ~ W + Z1 + Z2, data = simulated_data_confounder)
+ft
 ```
 
-
-- Example with `xtable`, converted to `flextable`, see @tbl-xtable-generation:
+- Example using the `gt` package paired with `gt::fmt_markdown()` function in @tbl-two-confounder-DAG-coef-gt:
 
 ```{r}
-#| label: tbl-xtable-generation
-#| eval: true
-# Y_W_coef <-  c(coef(Y_W), NA, NA)
-# Y_W_Z1_coef <-  c(coef(Y_W_Z1), NA)
-# Y_W_Z1_Z2_coef <- coef(Y_W_Z1_Z2)
+#| label: tbl-two-confounder-DAG-coef-gt
+#| tbl-cap: "Model coefficients for data generated from the two-confounder DAG"
 
 
 Y_W_coef <-  c(coef(Y_W), NA, NA)
 Y_W_Z1_coef <-  c(coef(Y_W_Z1), NA)
 Y_W_Z1_Z2_coef <- coef(Y_W_Z1_Z2)
 
-df_xtable <- rbind(Y_W_coef, Y_W_Z1_coef, Y_W_Z1_Z2_coef) |>
+df_two_confounder <- rbind(Y_W_coef, Y_W_Z1_coef, Y_W_Z1_Z2_coef) |>
   round(2) |>
-  as.data.frame() |>
+  tibble::as_tibble() |>
+  rename("Z_1" = V3, "Z_2" = V4) |>
   rownames_to_column("Model") |>
-  rename("$W$" = "W", "$Z_1$" = 4, "$Z_2$" = 5) |>
   select(-`(Intercept)`) |>
-  mutate(Model = c("$Y \\sim W$", "$Y \\sim W + Z_1$", "$Y \\sim W + Z_1 + Z_2$")) |>
-  xtable(floating = FALSE, booktabs = TRUE, align = c("c","|c||","c","c","c|"),
-         caption = "Model coefficients for data generated from the two-confounder DAG",
-         label = "table:two_confounder_DAG_coef")
-
-df_xtable_to_flextable <- flextable::as_flextable(df_xtable,
-                                                  include.rownames = FALSE,   NA.string ="-", )
-df_xtable_to_flextable
+  mutate(Model = c("$$Y \\sim W$$",
+                   "$$Y \\sim W + Z_1$$",
+                   "$$Y \\sim W + Z_1 + Z_2$$"))
 
 
-#### Not working #####
-# df_xtable <- df_xtable |>   print(include.rownames = FALSE,
-#                                   table.placement = "h!",
-#                                   sanitize.text.function = function(x){x})
-# df_xtable_to_flextable <- flextable::as_flextable(df_xtable)
-# df_xtable_to_flextable
+
+# Build gt table
+gt_tbl <- df_two_confounder |>
+  gt(rowname_col = "Model") |>
+  gt::fmt_markdown() |>
+  gt::cols_label(W ~ gt::md("$W$"), 
+                 Z_1 ~ gt::md("$Z_1$"), 
+                 Z_2 ~ gt::md("$Z_2$")) |> 
+  gt::sub_missing(columns = dplyr::everything(), missing_text = "") |> # deal with missing columns
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels(everything())
+  )
+
+gt_tbl
+
 ```
 
-
-- example with pure Markdown, and Pandoc syntax, see @tbl-two-confounder-DAG-coef
+- Example with pure Markdown, and Pandoc syntax, see @tbl-two-confounder-DAG-coef
 
 ::: {#tbl-two-confounder-DAG-coef}
            Model             $W$    $Z_1$   $Z_2$
